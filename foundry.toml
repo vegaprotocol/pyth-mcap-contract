@@ -2,5 +2,17 @@
 src = "src"
 out = "out"
 libs = ["lib"]
+extra_output = [
+  "ir",
+  "irOptimized",
+  "evm.bytecode.opcodes",
+  "evm.deployedBytecode.opcodes",
+]
+via_ir = true
 
-# See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
+[rpc_endpoints]
+gnosis_mainnet = "https://rpc.gnosischain.com"
+gnosis_testnet = "https://rpc.chaidochain.net"
+
+[etherscan]
+gnosis_mainnet = { url = "https://api.gnosisscan.io/api", key = "${GNOSISSCAN_KEY}", chain = 100 }

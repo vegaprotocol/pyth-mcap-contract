@@ -1,17 +1,42 @@
-## Foundry
+# `PythMcap`
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
-
-Foundry consists of:
-
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+> Calculate a weighted index price of a number of assets, optionally considering only the top N assets by market capitalization.
 
 ## Documentation
 
-https://book.getfoundry.sh/
+
+```solidity
+interface IPythMcap {
+    struct IndexAsset {
+        bytes32 pythId;
+        uint96 totalSupply;
+    }
+
+    /// @notice Get the index price for a list of assets
+    /// @param indexAssets List of index assets
+    /// @return Index price
+    function getIndexPrice(IndexAsset[] calldata indexAssets) public view returns (int256);
+
+    /// @notice Get the index price for top N assets by market cap, returning a price with the given expo
+    /// @param indexAssets List of index assets
+    /// @param topN Number of assets to consider. If N == indexAssets.length, all assets are considered. If N == 1 only the top asset is considered.
+    /// @param expo Exponent to rebase the price to (must be negative, ie. 10 ^ -expo)
+    /// @return Index price
+    function getIndexPrice(IndexAsset[] calldata indexAssets, uint8 topN, int32 expo) public view returns (int256);
+
+    /// @notice Get the index price quoted in base asset, for top N assets by market cap, returning a price with the given expo
+    /// @param indexAssets List of index assets
+    /// @param baseAssetId Base asset Pyth ID
+    /// @param topN Number of assets to consider
+    /// @param expo Exponent to rebase the price to (must be negative, ie. 10 ^ -expo)
+    /// @return Index price
+    function getIndexPrice(IndexAsset[] calldata indexAssets, bytes32 baseAssetId, uint8 topN, int32 expo)
+        public
+        view
+        returns (int256);
+}
+```
+
 
 ## Usage
 
@@ -33,34 +58,12 @@ $ forge test
 $ forge fmt
 ```
 
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
 ### Deploy
 
 ```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
+$ forge script script/PythMcap.s.sol:PythMcapScript --rpc-url <your_rpc_url> --private-key <your_private_key>
 ```
 
-### Cast
+## License
 
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+[MIT](LICENSE)
