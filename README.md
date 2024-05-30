@@ -1,4 +1,4 @@
-# `PythMcap`
+# `PythMcapIndex`
 
 > Calculate a weighted index price of a number of assets, optionally considering only the top N assets by market capitalization.
 
@@ -6,7 +6,7 @@
 
 
 ```solidity
-interface IPythMcap {
+interface IPythMcapIndex {
     struct IndexAsset {
         bytes32 pythId;
         uint96 totalSupply;
@@ -61,7 +61,7 @@ $ forge fmt
 ### Deploy
 
 ```shell
-$ forge script script/PythMcap.s.sol:PythMcapScript --rpc-url <your_rpc_url> --private-key <your_private_key>
+$ forge script script/PythMcapIndex.s.sol:PythMcapIndexScript --rpc-url <your_rpc_url> --private-key <your_private_key>
 ```
 
 ## License

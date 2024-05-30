@@ -2,19 +2,19 @@
 pragma solidity ^0.8.26;
 
 import {Test, console2} from "forge-std/Test.sol";
-import {PythMcap, IndexAsset, PYTH_GNOSIS_MAINNET} from "../src/PythMcap.sol";
+import {PythMcapIndex, IndexAsset, PYTH_GNOSIS_MAINNET} from "../src/PythMcapIndex.sol";
 import "../src/PriceFeedIDs.sol" as PriceFeedIDs;
 
 import {IPyth} from "pyth-sdk-solidity/IPyth.sol";
 import {MockPyth} from "pyth-sdk-solidity/MockPyth.sol";
 
-contract PythMcapTest is Test {
-    PythMcap public pythMcap;
+contract PythMcapIndexTest is Test {
+    PythMcapIndex public pythMcapIndex;
 
     function setUp() public {
         uint256 forkId = vm.createFork("gnosis_mainnet");
         vm.selectFork(forkId);
-        pythMcap = new PythMcap(PYTH_GNOSIS_MAINNET);
+        pythMcapIndex = new PythMcapIndex(PYTH_GNOSIS_MAINNET);
         IndexAsset[] memory assets = new IndexAsset[](5);
 
         assets[0] = IndexAsset({ // DOGE -8 0.15
@@ -38,19 +38,19 @@ contract PythMcapTest is Test {
             totalSupply: 9707798180236
         });
 
-        int256 indexPrice = pythMcap.getIndexPrice(assets);
+        int256 indexPrice = pythMcapIndex.getIndexPrice(assets);
     }
 
     function testGetPrice() public {}
 }
 
-contract PythMcapMockTest is Test {
-    PythMcap public pythMcap;
+contract PythMcapIndexMockTest is Test {
+    PythMcapIndex public pythMcapIndex;
     MockPyth public pyth;
 
     function setUp() public {
         pyth = new MockPyth(100, 100);
-        pythMcap = new PythMcap(address(pyth));
+        pythMcapIndex = new PythMcapIndex(address(pyth));
 
         bytes[] memory updateData = new bytes[](6);
         updateData[0] =
@@ -76,15 +76,15 @@ contract PythMcapMockTest is Test {
         assets[3] = IndexAsset({pythId: PriceFeedIDs.CRYPTO_WIF_USD, totalSupply: 100});
         assets[4] = IndexAsset({pythId: PriceFeedIDs.CRYPTO_FLOKI_USD, totalSupply: 100});
 
-        int256 indexPrice1 = pythMcap.getIndexPrice(assets);
-        int256 indexPrice2 = pythMcap.getIndexPrice(assets, 5, -18);
+        int256 indexPrice1 = pythMcapIndex.getIndexPrice(assets);
+        int256 indexPrice2 = pythMcapIndex.getIndexPrice(assets, 5, -18);
         assertEq(indexPrice1, 1e18, "Index price should be 1e18");
         assertEq(indexPrice2, 1e18, "Index price should be 1e18");
 
-        int256 indexPrice3 = pythMcap.getIndexPrice(assets, 3, -18);
+        int256 indexPrice3 = pythMcapIndex.getIndexPrice(assets, 3, -18);
         assertEq(indexPrice3, 1e18, "Index price should be 1e18");
 
-        int256 indexPrice4 = pythMcap.getIndexPrice(assets, 1, -18);
+        int256 indexPrice4 = pythMcapIndex.getIndexPrice(assets, 1, -18);
         assertEq(indexPrice4, 1e18, "Index price should be 1e18");
     }
 
@@ -96,26 +96,26 @@ contract PythMcapMockTest is Test {
         assets[3] = IndexAsset({pythId: PriceFeedIDs.CRYPTO_WIF_USD, totalSupply: 1000});
         assets[4] = IndexAsset({pythId: PriceFeedIDs.CRYPTO_FLOKI_USD, totalSupply: 10000});
 
-        int256 indexPrice1 = pythMcap.getIndexPrice(assets);
-        int256 indexPrice2 = pythMcap.getIndexPrice(assets, 5, -18);
+        int256 indexPrice1 = pythMcapIndex.getIndexPrice(assets);
+        int256 indexPrice2 = pythMcapIndex.getIndexPrice(assets, 5, -18);
         assertApproxEqAbs(indexPrice1, 1e18, 10, "Index price should be 1e18");
         assertApproxEqAbs(indexPrice2, 1e18, 10, "Index price should be 1e18");
 
-        int256 indexPrice3 = pythMcap.getIndexPrice(assets, 3, -18);
+        int256 indexPrice3 = pythMcapIndex.getIndexPrice(assets, 3, -18);
         assertApproxEqAbs(indexPrice3, 1e18, 10, "Index price should be 1e18");
 
-        int256 indexPrice4 = pythMcap.getIndexPrice(assets, 1, -18);
+        int256 indexPrice4 = pythMcapIndex.getIndexPrice(assets, 1, -18);
         assertApproxEqAbs(indexPrice4, 1e18, 10, "Index price should be 1e18");
     }
 }
 
-contract PythMcapMockFixtureTest is Test {
-    PythMcap public pythMcap;
+contract PythMcapIndexMockFixtureTest is Test {
+    PythMcapIndex public pythMcapIndex;
     MockPyth public pyth;
 
     function setUp() public {
         pyth = new MockPyth(100, 100);
-        pythMcap = new PythMcap(address(pyth));
+        pythMcapIndex = new PythMcapIndex(address(pyth));
 
         bytes[] memory updateData = new bytes[](6);
         updateData[0] = pyth.createPriceFeedUpdateData(
@@ -139,7 +139,7 @@ contract PythMcapMockFixtureTest is Test {
         pyth.updatePriceFeeds{value: 600}(updateData);
     }
 
-    function testMcap() public {
+    function testMcapIndex() public {
         IndexAsset[] memory assets = new IndexAsset[](5);
         assets[0] = IndexAsset({pythId: PriceFeedIDs.CRYPTO_DOGE_USD, totalSupply: 144301176384});
         assets[1] = IndexAsset({pythId: PriceFeedIDs.CRYPTO_SHIB_USD, totalSupply: 589534086491242});
@@ -147,15 +147,15 @@ contract PythMcapMockFixtureTest is Test {
         assets[3] = IndexAsset({pythId: PriceFeedIDs.CRYPTO_WIF_USD, totalSupply: 998906005});
         assets[4] = IndexAsset({pythId: PriceFeedIDs.CRYPTO_FLOKI_USD, totalSupply: 9707798180236});
 
-        int256 indexPrice1 = pythMcap.getIndexPrice(assets);
-        int256 indexPrice2 = pythMcap.getIndexPrice(assets, 5, -18);
+        int256 indexPrice1 = pythMcapIndex.getIndexPrice(assets);
+        int256 indexPrice2 = pythMcapIndex.getIndexPrice(assets, 5, -18);
         assertApproxEqAbs(indexPrice1, 308826848718787000, 5000, "Index price should be 1e18");
         assertApproxEqAbs(indexPrice2, 308826848718787000, 5000, "Index price should be 1e18");
 
-        int256 indexPrice3 = pythMcap.getIndexPrice(assets, 3, -18);
+        int256 indexPrice3 = pythMcapIndex.getIndexPrice(assets, 3, -18);
         assertApproxEqAbs(indexPrice3, 82732252927982900, 3000, "Index price should be 1e18");
 
-        int256 indexPrice4 = pythMcap.getIndexPrice(assets, 1, -18);
+        int256 indexPrice4 = pythMcapIndex.getIndexPrice(assets, 1, -18);
         assertApproxEqAbs(indexPrice4, 158950924514500000, 1000, "Index price should be 1e18");
     }
 }

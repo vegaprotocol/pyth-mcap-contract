@@ -27,7 +27,7 @@ struct Intermediate {
     int160 mcap;
 }
 
-contract PythMcap {
+contract PythMcapIndex {
     IPyth immutable pyth;
 
     constructor(address _pyth) {
